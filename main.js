@@ -8,35 +8,43 @@ document.addEventListener("DOMContentLoaded", () => {
   handleLike();
 });
 
+function handleResponse(btn) {
+  if (errorFlag.className === "") {
+    errorFlag.setAttribute("class", "hidden");
+  }
+  let heart = btn.querySelector("span");
+  switch (heart.innerText) {
+    case EMPTY_HEART:
+      heart.innerText = FULL_HEART;
+      heart.setAttribute("class", "activated-heart");
+      break;
+    case FULL_HEART:
+      heart.innerText = EMPTY_HEART;
+      heart.removeAttribute("class", "activated-heart");
+      break;
+    default:
+      console.log("What the hell are you clicking at?");
+  }
+}
+
+function handleError() {
+  errorFlag.removeAttribute("class");
+  let timeoutID = window.setTimeout(
+    () => errorFlag.setAttribute("class", "hidden"),
+    5000
+  );
+}
+
 function handleLike() {
   const likeBtns = Array.from(document.querySelectorAll("li.like"));
   for (const btn of likeBtns) {
     btn.addEventListener("click", () => {
       mimicServerCall()
         .then(() => {
-          if (errorFlag.className === "") {
-            errorFlag.setAttribute("class", "hidden");
-          }
-          let heart = btn.querySelector("span");
-          switch (heart.innerText) {
-            case EMPTY_HEART:
-              heart.innerText = FULL_HEART;
-              heart.setAttribute("class", "activated-heart");
-              break;
-            case FULL_HEART:
-              heart.innerText = EMPTY_HEART;
-              heart.removeAttribute("class", "activated-heart");
-              break;
-            default:
-              console.log("What the hell are you clicking at?");
-          }
+          handleResponse(btn);
         })
         .catch(() => {
-          errorFlag.removeAttribute("class");
-          let timeoutID = window.setTimeout(
-            () => errorFlag.setAttribute("class", "hidden"),
-            5000
-          );
+          handleError();
         });
     });
   }
